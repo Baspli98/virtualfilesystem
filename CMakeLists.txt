@@ -10,7 +10,11 @@ add_executable(virtualfilesystem main.cpp
     directory.h directory.cpp
     path.h path.cpp
     errors.h
-    filesystem.h filesystem.cpp)
+    filesystem.h filesystem.cpp
+    blockdevice.h blockdevice.cpp
+    blockdevice.h blockdevice.cpp
+    blockdevice.h blockdevice.cpp
+    blockdevice.cpp)
 
 include(GNUInstallDirs)
 install(TARGETS virtualfilesystem
