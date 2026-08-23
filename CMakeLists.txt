@@ -16,7 +16,9 @@ add_executable(virtualfilesystem main.cpp
     blockdevice.h blockdevice.cpp
     blockdevice.cpp
     fatfilesystem.h fatfilesystem.cpp
-    fat_table.h fat_table.cpp)
+    fat_table.h fat_table.cpp
+    inodefilesystem.h inodefilesystem.cpp
+    inode.h inode.cpp)
 
 include(GNUInstallDirs)
 install(TARGETS virtualfilesystem
