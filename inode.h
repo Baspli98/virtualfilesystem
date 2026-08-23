@@ -8,6 +8,17 @@
 
 namespace virtualfilesystem {
 
+/**
+ * @struct Inode
+ * @brief Stores metadata and block references for a filesystem object.
+ *
+ * An Inode represents the metadata of a file or directory in the
+ * inode-based filesystem. It stores information such as the object
+ * identifier, name, type, size, and the blocks allocated to the object.
+ *
+ * File data is stored separately on the underlying BlockDevice, while
+ * the Inode contains the metadata required to locate and manage it.
+ */
 struct Inode {
     std::uint64_t id = 0;
     bool directory = false;
