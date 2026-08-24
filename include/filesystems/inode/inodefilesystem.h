@@ -1,8 +1,8 @@
-#ifndef FATFILESYSTEM_H
-#define FATFILESYSTEM_H
+#ifndef INODEFILESYSTEM_H
+#define INODEFILESYSTEM_H
 
-#include "filesystem.h"
-#include "fat_table.h"
+#include <core/filesystem.h>
+#include <filesystems/inode/inode.h>
 
 #include <map>
 #include <memory>
@@ -12,22 +12,21 @@
 namespace virtualfilesystem {
 
 /**
- * @class FATFileSystem
- * @brief Implements a virtual filesystem based on the FAT allocation model.
+ * @class InodeFileSystem
+ * @brief Implements a virtual filesystem based on inode metadata.
  *
- * FATFileSystem stores file data on a BlockDevice and uses a FATTable
- * to manage block allocation. Files are represented as chains of blocks,
- * where each block references the next block through the file allocation
- * table.
+ * InodeFileSystem manages files and directories using inode structures.
+ * Each filesystem object is represented by an Inode containing its
+ * metadata and references to the storage blocks assigned to it.
  *
  * The class implements the common IFileSystem interface and can therefore
  * be used interchangeably with other filesystem implementations through
  * the VirtualFS abstraction.
  */
-class FATFileSystem final : public FileSystem {
+class InodeFileSystem final : public FileSystem {
 public:
-    explicit FATFileSystem(std::size_t blockCount = 1024,
-                           std::size_t blockSize = 512);
+    explicit InodeFileSystem(std::size_t blockCount = 1024,
+                             std::size_t blockSize = 512);
 
     void format() override;
 
@@ -44,33 +43,36 @@ public:
     std::vector<std::string> list(const Path& path) const override;
 
     StorageStatistics statistics() const override;
-    [[nodiscard]] const char* typeName() const noexcept override { return "FAT"; }
+    [[nodiscard]] const char* typeName() const noexcept override { return "Inode"; }
 
-    [[nodiscard]] const FATTable& fat() const noexcept;
+    [[nodiscard]] const std::map<std::uint64_t, Inode>& inodes() const noexcept;
 
 private:
     struct Node {
+        std::uint64_t inodeId = 0;
         bool directory = false;
         std::string name;
-        Data empty;
         std::map<std::string, std::unique_ptr<Node>> children;
-        std::size_t firstBlock = FATTable::FREE;
-        std::size_t size = 0;
     };
 
     std::unique_ptr<Node> root_;
-    FATTable fat_;
+    std::map<std::uint64_t, Inode> inodes_;
+    std::vector<bool> usedBlocks_;
+    std::uint64_t nextInodeId_ = 1;
 
     Node* findNode(const Path& path);
     const Node* findNode(const Path& path) const;
     Node* findParent(const Path& path);
-    static std::unique_ptr<Node> makeDirectory(std::string name);
-    static std::unique_ptr<Node> makeFile(std::string name);
-    void releaseNodeBlocks(Node& node);
+
+    void removeRecursive(Node& node);
     void writeNodeData(Node& node, const Data& data);
+    [[nodiscard]] const Inode& inodeOf(const Node& node) const;
+    [[nodiscard]] Inode& inodeOf(Node& node);
+    [[nodiscard]] std::size_t allocateBlock();
+    void freeBlocks(const Inode& inode);
 };
 
 } // namespace virtualfilesystem
 
 
-#endif // FATFILESYSTEM_H
+#endif // INODEFILESYSTEM_H
