@@ -1,5 +1,5 @@
-#include "directory.h"
-#include "errors.h"
+#include <core/directory.h>
+#include <error_handling/errors.h>
 
 namespace virtualfilesystem {
 

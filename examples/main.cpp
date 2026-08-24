@@ -1,6 +1,6 @@
-#include "fatfilesystem.h"
-#include "errors.h"
-#include "inodefilesystem.h"
+#include <filesystems/fat/fatfilesystem.h>
+#include <error_handling/errors.h>
+#include <filesystems/inode/inodefilesystem.h>
 
 #include <iomanip>
 #include <iostream>

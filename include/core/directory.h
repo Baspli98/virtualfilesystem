@@ -1,7 +1,7 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
-#include "file.h"
+#include <core/file.h>
 
 #include <map>
 #include <memory>
